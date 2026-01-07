@@ -10,7 +10,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #0b1120; color: #f3f4f6; }
         .glass { background: rgba(31, 41, 55, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
-        select option { background-color: #111827; }
+        select option { background-color: #111827; color: white; }
     </style>
 </head>
 <body class="min-h-screen pb-10">
@@ -20,10 +20,10 @@
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <div class="bg-blue-600 p-2 rounded-xl shadow-lg shadow-blue-500/20"><i class="fas fa-sms text-xl text-white"></i></div>
-                <span class="text-2xl font-black tracking-tight">OTP<span class="text-blue-500">GET</span></span>
+                <span class="text-2xl font-black tracking-tight uppercase">OTP<span class="text-blue-500">Get</span></span>
             </div>
-            <div class="bg-gray-800/80 px-4 py-2 rounded-full border border-gray-700">
-                <span class="text-[10px] text-gray-400 uppercase font-black mr-2">Your Balance</span>
+            <div class="bg-gray-800/80 px-4 py-2 rounded-full border border-gray-700 shadow-inner">
+                <span class="text-[10px] text-gray-400 uppercase font-black mr-2 tracking-widest">Balance</span>
                 <span id="balance-display" class="text-green-400 font-mono font-bold">Rs 0.00</span>
             </div>
         </div>
@@ -36,44 +36,44 @@
             <div class="lg:col-span-5">
                 <div class="bg-gray-800/40 p-8 rounded-3xl border border-gray-700 shadow-2xl">
                     <h2 class="text-xl font-bold mb-8 text-blue-400 flex items-center gap-3">
-                        <i class="fas fa-shopping-cart"></i> Order Number
+                        <i class="fas fa-shopping-basket"></i> Buy Service
                     </h2>
 
                     <div class="mb-6">
-                        <label class="block text-xs font-black text-gray-500 uppercase mb-2 ml-1 tracking-widest">1. Choose Country</label>
+                        <label class="block text-xs font-black text-gray-500 uppercase mb-2 ml-1 tracking-widest">1. Select Country</label>
                         <select id="country-select" class="w-full bg-gray-900 border border-gray-700 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer">
                             <option value="">Loading Countries...</option>
                         </select>
                     </div>
 
                     <div class="mb-10">
-                        <label class="block text-xs font-black text-gray-500 uppercase mb-2 ml-1 tracking-widest">2. Choose Service</label>
+                        <label class="block text-xs font-black text-gray-500 uppercase mb-2 ml-1 tracking-widest">2. Select Service</label>
                         <select id="service-select" class="w-full bg-gray-900 border border-gray-700 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer">
                             <option value="">Select country first</option>
                         </select>
                     </div>
 
                     <button onclick="buyNumber()" id="buy-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-5 rounded-2xl shadow-xl transition-all active:scale-95 flex justify-center items-center gap-3 text-lg">
-                        <i class="fas fa-bolt"></i> GET NUMBER NOW
+                        <i class="fas fa-bolt"></i> GET NUMBER
                     </button>
                 </div>
             </div>
 
             <!-- Status Card -->
             <div class="lg:col-span-7">
-                <div class="bg-gray-800/40 p-8 rounded-3xl border border-gray-700 shadow-2xl min-h-[450px] flex flex-col relative">
+                <div class="bg-gray-800/40 p-8 rounded-3xl border border-gray-700 shadow-2xl min-h-[450px] flex flex-col">
                     <h2 class="text-xl font-bold mb-8 text-yellow-500 flex items-center gap-3">
-                        <i class="fas fa-satellite-dish"></i> Live Activation
+                        <i class="fas fa-satellite-dish"></i> Active Connection
                     </h2>
 
                     <div id="no-order" class="flex-grow flex flex-col items-center justify-center text-gray-500 opacity-40 py-10">
-                        <i class="fas fa-phone-alt text-6xl mb-4"></i>
-                        <p class="text-center">Waiting for your first order...</p>
+                        <i class="fas fa-mobile-alt text-6xl mb-4"></i>
+                        <p class="text-center">No active number.<br>Order details will appear here.</p>
                     </div>
 
                     <div id="order-container" class="hidden space-y-10 animate-in fade-in duration-300">
-                        <div class="bg-gray-900/80 p-8 rounded-3xl border border-gray-700">
-                            <p class="text-[10px] text-gray-500 uppercase font-black mb-4 tracking-widest">Phone Number</p>
+                        <div class="bg-gray-900/80 p-8 rounded-3xl border border-gray-700 shadow-inner">
+                            <p class="text-[10px] text-gray-500 uppercase font-black mb-4 tracking-widest font-mono">Number Received</p>
                             <div class="flex items-center justify-between">
                                 <span id="phone-number" class="text-3xl md:text-5xl font-mono font-bold text-white tracking-tighter">-----------</span>
                                 <button onclick="copyText('phone-number')" class="p-4 bg-gray-800 hover:bg-gray-700 rounded-2xl text-blue-400 transition-all active:scale-90"><i class="far fa-copy text-xl"></i></button>
@@ -81,13 +81,13 @@
                         </div>
 
                         <div class="text-center py-4">
-                            <p class="text-[10px] text-gray-500 uppercase font-black mb-4 tracking-widest">OTP Status</p>
+                            <p class="text-[10px] text-gray-500 uppercase font-black mb-4 tracking-widest">Verification Code (OTP)</p>
                             <div id="otp-display" class="text-7xl font-black text-green-500 font-mono tracking-widest animate-pulse">------</div>
                         </div>
 
                         <div class="flex gap-4">
                             <button onclick="cancelOrder()" class="flex-1 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/20 py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all">Cancel</button>
-                            <button onclick="checkStatus()" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all">Refresh Status</button>
+                            <button onclick="checkStatus()" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all">Check SMS</button>
                         </div>
                     </div>
                 </div>
@@ -101,25 +101,12 @@
         let currentOrderId = null;
         let statusInterval = null;
 
-        // --- CONFIGURATION ---
-        const PROFIT_PERCENTAGE = 40; // Apna profit set karen (e.g., 40% matlab Rs 10 ki cheez Rs 14 mein)
-        const DEFAULT_MIN_PRICE = 30; // Agar kisi ki price 0 ho to ye dikhaye
-
-        // Service Codes Mapping (lb, jb etc ko asli naamon mein badalne ke liye)
-        const serviceNames = {
-            "wa": "WhatsApp", "tg": "Telegram", "go": "Google / Gmail", "fb": "Facebook",
-            "ig": "Instagram", "tk": "TikTok", "nf": "Netflix", "am": "Amazon",
-            "tw": "Twitter / X", "mt": "Microsoft", "ub": "Uber", "dr": "DoorDash",
-            "lf": "LinkedIn", "yl": "Yandex", "uk": "Airbnb", "ki": "OkCupid", 
-            "hw": "Hinge", "al": "Alibaba", "pm": "PayPal", "wx": "WeChat", 
-            "li": "Line", "bl": "Bigo Live", "bz": "Blizzard", "qn": "Quizlet", 
-            "tx": "Taxfix", "ip": "IPTV", "lb": "Mail.ru / Lazada", "jb": "Joom",
-            "vi": "Viber", "ok": "OK.ru", "vk": "VKontakte", "ot": "Other Services"
-        };
+        // --- PROFIT CONFIGURATION ---
+        const PROFIT_PERCENTAGE = 40; // Change this to your desired profit (e.g., 40%)
 
         window.onload = () => { getBalance(); loadCountries(); };
 
-        // 1. Get Balance
+        // 1. Fetch Balance
         async function getBalance() {
             try {
                 const res = await fetch(`${API_PATH}?action=getBalance`);
@@ -128,7 +115,7 @@
                     const val = json.raw_text.split(':')[1];
                     document.getElementById('balance-display').innerText = 'Rs ' + parseFloat(val).toFixed(2);
                 }
-            } catch (e) { console.error("Balance failed"); }
+            } catch (e) { console.error("Balance fetch error"); }
         }
 
         // 2. Load Countries
@@ -146,72 +133,63 @@
                     opt.innerText = country.name;
                     select.appendChild(opt);
                 });
-            } catch (e) { select.innerHTML = '<option value="">Error loading</option>'; }
+            } catch (e) { select.innerHTML = '<option value="">Error loading list</option>'; }
         }
 
-        // 3. Load Services with Automatic Parser & Profit
+        // 3. Load Services with String Parsing & Profit
         document.getElementById('country-select').addEventListener('change', async (e) => {
             const countryId = e.target.value;
             const select = document.getElementById('service-select');
             if(!countryId) return;
 
-            select.innerHTML = '<option value="">Loading Services...</option>';
+            select.innerHTML = '<option value="">Searching Services...</option>';
             try {
                 const res = await fetch(`${API_PATH}?action=getServices&country=${countryId}`);
                 const data = await res.json();
                 
-                // Key "1" ya direct object
+                // Humari API ka main data (Key "1" ya Direct)
                 const servicesData = data["1"] || data;
                 select.innerHTML = '<option value="">Select Service</option>';
                 
                 Object.keys(servicesData).forEach(code => {
-                    const rawValue = servicesData[code]; // e.g. "WhatsApp - 60 PKR"
-                    let displayName = code.toUpperCase();
-                    let apiBasePrice = 0;
+                    const rawString = servicesData[code]; // e.g. "whatsapp - 390 PKR"
+                    let serviceName = code.toUpperCase();
+                    let apiPrice = 0;
 
-                    // Step A: Parse String (e.g. "Telegram - 45 PKR")
-                    if (typeof rawValue === 'string') {
-                        const parts = rawValue.split(' - ');
-                        if (parts.length >= 2) {
-                            // Name part
-                            displayName = parts[0];
-                            // Price part
-                            const priceMatch = parts[1].match(/\d+/);
-                            if (priceMatch) apiBasePrice = parseFloat(priceMatch[0]);
-                        } else {
-                            displayName = rawValue;
-                        }
-                    } else if (typeof rawValue === 'object') {
-                        displayName = rawValue.name || code.toUpperCase();
-                        apiBasePrice = parseFloat(rawValue.price || rawValue.cost || 0);
+                    // String Parsing Logic (Hyphen se todna)
+                    if (typeof rawString === 'string' && rawString.includes(' - ')) {
+                        const parts = rawString.split(' - ');
+                        // Name ko capitalize karna (e.g. whatsapp -> Whatsapp)
+                        serviceName = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+                        
+                        // Price nikalna (Extract digits)
+                        const match = parts[1].match(/\d+(\.\d+)?/);
+                        if (match) apiPrice = parseFloat(match[0]);
                     }
 
-                    // Step B: Manual Name Mapping Fix (lb, jb fix)
-                    if (serviceNames[code.toLowerCase()]) {
-                        displayName = serviceNames[code.toLowerCase()];
-                    }
-
-                    // Step C: Profit Calculation
-                    if (apiBasePrice <= 0) apiBasePrice = DEFAULT_MIN_PRICE;
-                    const finalPrice = apiBasePrice + (apiBasePrice * (PROFIT_PERCENTAGE / 100));
+                    // Profit Calculation
+                    const finalPrice = apiPrice + (apiPrice * (PROFIT_PERCENTAGE / 100));
                     
                     let opt = document.createElement('option');
                     opt.value = code;
-                    opt.innerText = `${displayName.toUpperCase()} (Rs ${Math.ceil(finalPrice)})`;
+                    opt.innerText = `${serviceName} (Rs ${Math.ceil(finalPrice)})`;
                     select.appendChild(opt);
                 });
                 
-            } catch (e) { select.innerHTML = '<option value="">No services</option>'; }
+            } catch (e) { 
+                console.error(e);
+                select.innerHTML = '<option value="">No services available</option>'; 
+            }
         });
 
         // 4. Buy Number
         async function buyNumber() {
             const country = document.getElementById('country-select').value;
             const service = document.getElementById('service-select').value;
-            if(!country || !service) return alert("Select country and service!");
+            if(!country || !service) return alert("Select country and service first!");
 
             const btn = document.getElementById('buy-btn');
-            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner animate-spin"></i> CONNECTING...';
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch animate-spin"></i> Processing...';
 
             try {
                 const res = await fetch(`${API_PATH}?action=getNumber&country=${country}&service=${service}&type=1`);
@@ -227,10 +205,11 @@
                     startStatusCheck();
                     getBalance();
                 } else { alert("Error: " + data); }
-            } catch (e) { alert("Failed to fetch number"); }
-            btn.disabled = false; btn.innerHTML = '<i class="fas fa-bolt"></i> GET NUMBER NOW';
+            } catch (e) { alert("API Connection Failed"); }
+            btn.disabled = false; btn.innerHTML = '<i class="fas fa-bolt"></i> GET NUMBER';
         }
 
+        // 5. Check Status (Polling)
         function startStatusCheck() {
             if(statusInterval) clearInterval(statusInterval);
             statusInterval = setInterval(checkStatus, 5000);
@@ -246,12 +225,13 @@
                 document.getElementById('otp-display').innerText = data.split(':')[1];
                 document.getElementById('otp-display').classList.remove('animate-pulse');
                 clearInterval(statusInterval);
-                alert("OTP RECEIVED!");
+                alert("OTP Received Successfully!");
             } else if(data === "STATUS_CANCEL") { resetUI(); }
         }
 
+        // 6. Cancel & Refund
         async function cancelOrder() {
-            if(!confirm("Cancel and refund?")) return;
+            if(!confirm("Cancel and get refund?")) return;
             await fetch(`${API_PATH}?action=setStatus&id=${currentOrderId}&status=8`);
             resetUI();
             getBalance();
@@ -266,8 +246,9 @@
         }
 
         function copyText(id) {
-            navigator.clipboard.writeText(document.getElementById(id).innerText);
-            alert("Copied!");
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text);
+            alert("Copied: " + text);
         }
     </script>
 </body>
