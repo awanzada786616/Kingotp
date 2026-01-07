@@ -3,154 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OTP-GET | Vercel Edition</title>
+    <title>OTP-GET | Premium SMS Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: white; }
-        .glass { background: rgba(31, 41, 55, 0.7); backdrop-filter: blur(10px); }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(31, 41, 55, 0.7); backdrop-filter: blur(12px); }
+        .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
+        select option { background-color: #1f2937; color: white; }
     </style>
 </head>
-<body>
+<body class="bg-[#0b1120] text-gray-100 min-h-screen">
 
     <!-- Navbar -->
-    <nav class="border-b border-gray-800 glass p-4 flex justify-between items-center sticky top-0 z-50">
-        <h1 class="text-xl font-bold text-blue-500"><i class="fas fa-sms mr-2"></i>OTP-GET</h1>
-        <div class="bg-gray-800 px-4 py-2 rounded-full border border-gray-700">
-            <span class="text-gray-400 text-xs uppercase mr-2 font-bold">Balance</span>
-            <span id="balance-display" class="text-green-400 font-mono font-bold">Loading...</span>
+    <nav class="border-b border-gray-800 glass sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="bg-blue-600 p-2 rounded-xl shadow-lg shadow-blue-900/40">
+                    <i class="fas fa-sms text-xl text-white"></i>
+                </div>
+                <span class="text-2xl font-black tracking-tight text-white">OTP<span class="text-blue-500">GET</span></span>
+            </div>
+            
+            <div class="bg-gray-800/80 px-5 py-2 rounded-full border border-gray-700 shadow-inner">
+                <span class="text-[10px] text-gray-400 uppercase font-black mr-2 tracking-widest">Balance</span>
+                <span id="balance-display" class="text-green-400 font-mono font-bold text-sm md:text-base">Rs 0.00</span>
+            </div>
         </div>
     </nav>
 
-    <div class="container mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-        
-        <!-- Order Panel -->
-        <div class="bg-gray-800/50 p-6 rounded-2xl border border-gray-700">
-            <h2 class="text-lg font-bold mb-4 text-blue-400">1. Select Service</h2>
+    <main class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            <label class="block text-gray-400 text-sm mb-1">Country</label>
-            <select id="country-select" class="w-full bg-gray-900 border border-gray-700 p-3 rounded-lg mb-4 outline-none focus:border-blue-500">
-                <option>Loading Countries...</option>
-            </select>
-
-            <label class="block text-gray-400 text-sm mb-1">Service</label>
-            <select id="service-select" class="w-full bg-gray-900 border border-gray-700 p-3 rounded-lg mb-6 outline-none focus:border-blue-500">
-                <option>Select Country First</option>
-            </select>
-
-            <button onclick="buyNumber()" id="buy-btn" class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-bold transition-all shadow-lg">
-                Get Number
-            </button>
-        </div>
-
-        <!-- Result Panel -->
-        <div class="bg-gray-800/50 p-6 rounded-2xl border border-gray-700 min-h-[300px]">
-            <h2 class="text-lg font-bold mb-4 text-yellow-500">2. Active Order</h2>
-            
-            <div id="no-order" class="text-center py-10 text-gray-500">
-                <i class="fas fa-mobile-alt text-4xl mb-2"></i>
-                <p>No active number</p>
-            </div>
-
-            <div id="order-container" class="hidden space-y-6">
-                <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 flex justify-between items-center">
-                    <div>
-                        <p class="text-xs text-gray-400 uppercase">Your Number</p>
-                        <p id="phone-number" class="text-2xl font-mono text-white tracking-wider">-----------</p>
+            <!-- Selection Panel (Left) -->
+            <div class="lg:col-span-5">
+                <div class="bg-gray-800/40 p-8 rounded-3xl border border-gray-700 shadow-2xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10">
+                        <i class="fas fa-cog text-6xl"></i>
                     </div>
-                    <button onclick="copyNumber()" class="text-blue-400 p-2 hover:bg-gray-800 rounded-lg"><i class="far fa-copy"></i></button>
-                </div>
+                    
+                    <h2 class="text-xl font-bold mb-8 flex items-center gap-3 text-blue-400">
+                        <i class="fas fa-sliders-h"></i> Configure Order
+                    </h2>
 
-                <div class="text-center bg-gray-900/50 p-6 rounded-xl border border-dashed border-gray-600">
-                    <p class="text-xs text-gray-400 uppercase mb-2">OTP Code</p>
-                    <div id="otp-display" class="text-5xl font-black text-green-500 font-mono tracking-widest">------</div>
-                </div>
+                    <!-- Country -->
+                    <div class="mb-6">
+                        <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">1. Select Country</label>
+                        <select id="country-select" class="w-full bg-gray-900/80 border border-gray-700 p-4 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer appearance-none">
+                            <option value="">Loading Countries...</option>
+                        </select>
+                    </div>
 
-                <div class="flex gap-2">
-                    <button onclick="cancelOrder()" class="flex-1 bg-red-500/20 text-red-500 py-2 rounded-lg border border-red-500/50 hover:bg-red-500 hover:text-white transition-all">Cancel</button>
-                    <button onclick="checkStatus()" class="flex-1 bg-gray-700 text-white py-2 rounded-lg hover:bg-gray-600 transition-all">Refresh</button>
+                    <!-- Service -->
+                    <div class="mb-10">
+                        <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">2. Select Service</label>
+                        <select id="service-select" class="w-full bg-gray-900/80 border border-gray-700 p-4 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer appearance-none">
+                            <option value="">Select country first</option>
+                        </select>
+                    </div>
+
+                    <!-- Buy Button -->
+                    <button onclick="buyNumber()" id="buy-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-5 rounded-2xl shadow-xl shadow-blue-900/30 transition-all transform active:scale-[0.98] flex justify-center items-center gap-3 text-lg">
+                        <i class="fas fa-shopping-basket"></i> GET NUMBER
+                    </button>
                 </div>
             </div>
+
+            <!-- Active Order Panel (Right) -->
+            <div class="lg:col-span-7">
+                <div class="bg-gray-800/40 p-8 rounded-3xl border border-gray-700 shadow-2xl min-h-[450px] flex flex-col relative">
+                    <h2 class="text-xl font-bold mb-8 flex items-center gap-3 text-yellow-500">
+                        <i class="fas fa-bolt"></i> Live Activation
+                    </h2>
+
+                    <!-- Empty State -->
+                    <div id="no-order" class="flex-grow flex flex-col items-center justify-center text-gray-500 py-10">
+                        <div class="bg-gray-900/80 w-24 h-24 rounded-full flex items-center justify-center mb-6 border border-gray-800 shadow-inner">
+                            <i class="fas fa-phone-slash text-4xl opacity-20"></i>
+                        </div>
+                        <p class="text-center text-sm font-medium leading-relaxed">No active number at the moment.<br>Select a country and service to start.</p>
+                    </div>
+
+                    <!-- Order Details -->
+                    <div id="order-container" class="hidden space-y-10 animate-in fade-in zoom-in duration-300">
+                        <div class="bg-gray-900/80 p-8 rounded-3xl border border-gray-700 relative group">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-[10px] text-gray-500 uppercase font-black tracking-[0.2em]">Phone Number</span>
+                                <span class="flex items-center gap-1 text-blue-400 text-[10px] font-bold uppercase"><span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span> Live</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span id="phone-number" class="text-3xl md:text-5xl font-mono font-bold text-white tracking-tighter">-----------</span>
+                                <button onclick="copyText('phone-number')" class="p-4 bg-gray-800 hover:bg-gray-700 rounded-2xl text-blue-400 transition-all active:scale-90">
+                                    <i class="far fa-copy text-xl"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="text-center relative py-6">
+                            <p class="text-[10px] text-gray-500 uppercase font-black tracking-[0.2em] mb-4">Verification Code</p>
+                            <div id="otp-display" class="text-7xl font-black text-green-500 font-mono tracking-[0.3em] drop-shadow-[0_0_15px_rgba(34,197,94,0.3)] animate-pulse-slow">
+                                ------
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 pt-6">
+                            <button onclick="cancelOrder()" class="flex-1 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/20 py-4 rounded-2xl font-black transition-all text-xs uppercase tracking-widest">
+                                <i class="fas fa-trash-alt mr-2"></i> Cancel
+                            </button>
+                            <button onclick="checkStatus()" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-4 rounded-2xl font-black transition-all text-xs uppercase tracking-widest">
+                                <i class="fas fa-sync-alt mr-2"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-    </div>
+    </main>
 
     <script>
-        // Vercel Path
-        const API_PATH = '/api/otp'; 
+        const API_PATH = '/api/otp';
         let currentOrderId = null;
         let statusInterval = null;
 
-        window.onload = () => { getBalance(); loadCountries(); };
+        window.onload = () => { 
+            getBalance(); 
+            loadCountries(); 
+        };
 
+        // 1. Get Balance
         async function getBalance() {
             try {
                 const res = await fetch(`${API_PATH}?action=getBalance`);
                 const json = await res.json();
-                if(json.raw_text.includes('ACCESS_BALANCE')) {
-                    document.getElementById('balance-display').innerText = 'Rs ' + json.raw_text.split(':')[1];
+                if(json.raw_text && json.raw_text.includes('ACCESS_BALANCE')) {
+                    const bal = json.raw_text.split(':')[1];
+                    document.getElementById('balance-display').innerText = 'Rs ' + parseFloat(bal).toLocaleString(undefined, {minimumFractionDigits: 2});
                 }
-            } catch (e) { console.error("Balance Error"); }
+            } catch (e) { console.error("Balance fetch error"); }
         }
 
+        // 2. Load Countries (Fixed for Object/Undefined issue)
         async function loadCountries() {
             const select = document.getElementById('country-select');
             try {
                 const res = await fetch(`${API_PATH}?action=getCountries`);
-                const countries = await res.json();
+                const data = await res.json();
                 select.innerHTML = '<option value="">Select Country</option>';
                 
-                // Handling both Array and Object format
-                const list = Array.isArray(countries) ? countries : Object.values(countries);
-                list.forEach(c => {
+                // Object.entries use kiya hai takay keys aur values dono mil jayein
+                const entries = Object.entries(data);
+                entries.forEach(([id, info]) => {
                     let opt = document.createElement('option');
-                    opt.value = c.id;
-                    opt.innerText = c.name || `ID: ${c.id}`;
+                    opt.value = id;
+                    // Agar info object hai to uska name lein, warna direct info
+                    const name = (info && info.name) ? info.name : (typeof info === 'string' ? info : `ID: ${id}`);
+                    opt.innerText = name;
                     select.appendChild(opt);
                 });
-            } catch (e) { select.innerHTML = '<option>Error loading</option>'; }
+            } catch (e) { select.innerHTML = '<option value="">Error Loading</option>'; }
         }
 
+        // 3. Load Services
         document.getElementById('country-select').addEventListener('change', async (e) => {
+            const countryId = e.target.value;
             const select = document.getElementById('service-select');
-            select.innerHTML = '<option>Loading...</option>';
+            if(!countryId) { select.innerHTML = '<option value="">Select country first</option>'; return; }
+
+            select.innerHTML = '<option value="">Loading Services...</option>';
             try {
-                const res = await fetch(`${API_PATH}?action=getServices&country=${e.target.value}`);
-                const services = await res.json();
+                const res = await fetch(`${API_PATH}?action=getServices&country=${countryId}`);
+                const data = await res.json();
                 select.innerHTML = '<option value="">Select Service</option>';
-                const list = Array.isArray(services) ? services : Object.values(services);
-                list.forEach(s => {
+                
+                Object.entries(data).forEach(([id, info]) => {
                     let opt = document.createElement('option');
-                    opt.value = s.id;
-                    opt.innerText = `${s.name} (Rs ${s.price})`;
+                    opt.value = id;
+                    const name = (info && info.name) ? info.name : id;
+                    const price = (info && info.price) ? info.price : '0';
+                    opt.innerText = `${name} (Rs ${price})`;
                     select.appendChild(opt);
                 });
-            } catch (e) { select.innerHTML = '<option>No services</option>'; }
+            } catch (e) { select.innerHTML = '<option value="">No services available</option>'; }
         });
 
+        // 4. Buy Number
         async function buyNumber() {
             const country = document.getElementById('country-select').value;
             const service = document.getElementById('service-select').value;
-            if(!country || !service) return alert("Select all options");
-
             const btn = document.getElementById('buy-btn');
-            btn.disabled = true; btn.innerText = 'Wait...';
+
+            if(!country || !service) { alert("Please select country and service!"); return; }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner animate-spin"></i> PROCESSING...';
 
             try {
                 const res = await fetch(`${API_PATH}?action=getNumber&country=${country}&service=${service}`);
                 const json = await res.json();
-                if(json.raw_text.includes('ACCESS_NUMBER')) {
-                    const parts = json.raw_text.split(':');
+                const data = json.raw_text;
+
+                if(data.includes('ACCESS_NUMBER')) {
+                    const parts = data.split(':');
                     currentOrderId = parts[1];
                     document.getElementById('phone-number').innerText = '+' + parts[2];
+                    
                     document.getElementById('order-container').classList.remove('hidden');
                     document.getElementById('no-order').classList.add('hidden');
+                    
                     startStatusCheck();
                     getBalance();
-                } else { alert(json.raw_text); }
-            } catch (e) { alert("Failed"); }
-            btn.disabled = false; btn.innerText = 'Get Number';
+                } else {
+                    alert("Error: " + data);
+                }
+            } catch (e) { alert("Request Failed"); }
+            
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-shopping-basket"></i> GET NUMBER';
         }
 
+        // 5. Polling OTP
         function startStatusCheck() {
             if(statusInterval) clearInterval(statusInterval);
             statusInterval = setInterval(checkStatus, 5000);
@@ -158,32 +232,48 @@
 
         async function checkStatus() {
             if(!currentOrderId) return;
-            const res = await fetch(`${API_PATH}?action=getStatus&id=${currentOrderId}`);
-            const json = await res.json();
-            if(json.raw_text.includes('STATUS_OK')) {
-                document.getElementById('otp-display').innerText = json.raw_text.split(':')[1];
-                clearInterval(statusInterval);
-            } else if(json.raw_text === 'STATUS_CANCEL') {
-                resetUI();
-            }
+            try {
+                const res = await fetch(`${API_PATH}?action=getStatus&id=${currentOrderId}`);
+                const json = await res.json();
+                const data = json.raw_text;
+
+                if(data.includes('STATUS_OK')) {
+                    const otp = data.split(':')[1];
+                    const otpBox = document.getElementById('otp-display');
+                    otpBox.innerText = otp;
+                    otpBox.classList.remove('animate-pulse-slow');
+                    clearInterval(statusInterval);
+                    alert("OTP RECEIVED: " + otp);
+                } else if (data === "STATUS_CANCEL") {
+                    resetUI();
+                }
+            } catch (e) { console.log("Status check error"); }
         }
 
+        // 6. Cancel
         async function cancelOrder() {
-            await fetch(`${API_PATH}?action=setStatus&id=${currentOrderId}&status=8`);
-            resetUI();
-            getBalance();
+            if(!confirm("Cancel this number?")) return;
+            try {
+                await fetch(`${API_PATH}?action=setStatus&id=${currentOrderId}&status=8`);
+                resetUI();
+                getBalance();
+            } catch (e) { alert("Cancel failed"); }
         }
 
         function resetUI() {
-            currentOrderId = null; clearInterval(statusInterval);
+            currentOrderId = null;
+            clearInterval(statusInterval);
             document.getElementById('order-container').classList.add('hidden');
             document.getElementById('no-order').classList.remove('hidden');
+            document.getElementById('otp-display').innerText = "------";
+            document.getElementById('otp-display').classList.add('animate-pulse-slow');
         }
 
-        function copyNumber() {
-            navigator.clipboard.writeText(document.getElementById('phone-number').innerText);
-            alert("Copied!");
+        function copyText(id) {
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text);
+            alert("Copied: " + text);
         }
     </script>
 </body>
-  </html>
+</html>
