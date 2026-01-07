@@ -12,16 +12,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // Tailwind Configuration for Dark Mode
         tailwind.config = {
             darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#0061ff',
-                    }
-                }
-            }
+            theme: { extend: { colors: { primary: '#0061ff' } } }
         }
     </script>
 
@@ -29,30 +22,28 @@
         @import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&display=swap');
         body { font-family: 'Public Sans', sans-serif; transition: background-color 0.3s, color 0.3s; }
         
-        /* Stylish Slim Marquee */
         .marquee-container {
             background: #0055ff;
-            height: 28px;
+            height: 26px;
             display: flex;
             align-items: center;
             overflow: hidden;
-            border-radius: 6px;
+            border-radius: 8px;
         }
         .marquee-text {
             color: white;
             white-space: nowrap;
-            font-size: 11px;
-            font-weight: 600;
+            font-size: 10px;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            animation: marquee 20s linear infinite;
+            letter-spacing: 1px;
+            animation: marquee 25s linear infinite;
         }
         @keyframes marquee {
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
         }
 
-        /* Error Box Animation */
         #error-box {
             transform: translateY(-150%);
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -65,116 +56,103 @@
 </head>
 <body class="bg-gray-50 text-gray-800 dark:bg-slate-950 dark:text-gray-200">
 
-    <!-- Stylish Red Error Alert -->
+    <!-- Low Balance Alert (Red Box) -->
     <div id="error-box" class="fixed top-0 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-md bg-red-600 text-white p-4 rounded-2xl shadow-2xl flex items-center gap-4">
-        <div class="bg-white/20 p-2 rounded-lg">
-            <i class="fas fa-exclamation-triangle"></i>
-        </div>
+        <div class="bg-white/20 p-2 rounded-lg"><i class="fas fa-wallet"></i></div>
         <div>
             <p class="font-bold text-sm">Low Balance!</p>
-            <p class="text-xs opacity-90">Please recharge your wallet to continue.</p>
+            <p class="text-xs opacity-90">Please recharge to purchase this number.</p>
         </div>
-        <button onclick="hideError()" class="ml-auto opacity-50"><i class="fas fa-times"></i></button>
+        <button onclick="hideError()" class="ml-auto"><i class="fas fa-times"></i></button>
     </div>
 
     <!-- Header -->
     <nav class="bg-white dark:bg-slate-900 sticky top-0 z-50 shadow-sm px-4 py-3 border-b dark:border-slate-800">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center gap-4">
-                <button class="text-gray-400"><i class="fas fa-bars text-xl"></i></button>
-                <span class="text-xl font-black tracking-tighter text-slate-800 dark:text-white uppercase">WASI<span class="text-primary">OTP</span></span>
+                <button class="text-gray-400 lg:hidden"><i class="fas fa-bars"></i></button>
+                <span class="text-xl font-black tracking-tighter uppercase">WASI<span class="text-primary">OTP</span></span>
             </div>
             
-            <div class="flex items-center gap-4">
-                <!-- Dark Mode Toggle -->
-                <button onclick="toggleDarkMode()" id="theme-toggle" class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-gray-500 dark:text-yellow-400 transition-all">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleDarkMode()" class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-gray-500 dark:text-yellow-400">
                     <i class="fas fa-moon" id="theme-icon"></i>
                 </button>
-                <div class="hidden md:block bg-blue-50 dark:bg-blue-900/30 text-primary dark:text-blue-400 px-3 py-1 rounded-lg font-bold text-xs">PKR</div>
-                <div class="w-10 h-10 rounded-full border-2 border-primary/20 p-0.5">
-                    <img src="https://ui-avatars.com/api/?name=Awais+Awan&background=0061ff&color=fff" alt="Profile" class="rounded-full">
-                </div>
+                <div class="bg-blue-50 dark:bg-blue-900/30 text-primary dark:text-blue-400 px-3 py-1 rounded-lg font-bold text-xs">PKR</div>
+                <img src="https://ui-avatars.com/api/?name=Awais+Awan&background=0061ff&color=fff" class="w-10 h-10 rounded-full border-2 border-white dark:border-slate-800">
             </div>
         </div>
     </nav>
 
     <div class="container mx-auto px-4 py-6 max-w-4xl">
         
-        <p class="text-[10px] font-bold text-gray-400 dark:text-slate-500 mb-4 tracking-widest uppercase">Dashboard / <span class="text-primary">Home</span></p>
-
-        <!-- Main Balance Card -->
-        <div class="bg-main-box rounded-[2rem] p-8 text-white relative overflow-hidden shadow-2xl shadow-blue-500/20 mb-6">
+        <!-- Balance Card -->
+        <div class="bg-main-box rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl mb-6">
             <div class="relative z-10">
-                <p class="text-xs font-bold opacity-70 mb-1">Welcome back,</p>
-                <h1 id="user-name" class="text-2xl font-bold mb-8">User Name</h1>
+                <p class="text-xs font-bold opacity-70 mb-1">Welcome,</p>
+                <h1 id="user-name" class="text-2xl font-bold mb-8 italic">Awais Awan</h1>
                 
-                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 inline-block min-w-[240px]">
-                    <p class="text-[10px] opacity-70 mb-1 uppercase font-black tracking-[0.2em]">Available Balance</p>
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 inline-block min-w-[260px]">
+                    <p class="text-[10px] opacity-70 mb-1 uppercase font-black tracking-widest">Available Balance</p>
                     <div class="flex items-baseline gap-2">
-                        <span class="text-xs font-bold opacity-80">Rs</span>
-                        <span id="user-balance" class="text-3xl font-black">0.00</span>
-                        <span class="text-[10px] font-bold opacity-60">PKR</span>
+                        <span class="text-xs font-bold">Rs</span>
+                        <span id="user-balance" class="text-4xl font-black tracking-tighter">0.00</span>
                     </div>
                 </div>
             </div>
-            <!-- Background Decoration -->
             <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-white/5 rounded-full blur-3xl"></div>
         </div>
 
-        <!-- Stylish Slim Marquee -->
+        <!-- Slim Marquee -->
         <div class="marquee-container mb-8">
             <div class="marquee-text">
-                🚨 Welcome to WASI OTP - High Quality Numbers Available - Fast Delivery - Recharge via WhatsApp 24/7 🚨
+                ⚠️ YOU AGREE WITH OUR TERMS. [ REGARDS: TEAM WASI-OTP ] - RECHARGE VIA WHATSAPP - FASTEST DELIVERY ⚠️
             </div>
         </div>
 
-        <!-- Form Section -->
+        <!-- Order Form -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
-            
-            <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border dark:border-slate-800">
-                <h3 class="font-bold text-sm mb-6 flex items-center gap-2">
-                    <i class="fas fa-globe-americas text-primary"></i> ORDER NUMBER
-                </h3>
-                <div class="space-y-4">
+            <div class="bg-white dark:bg-slate-900 p-7 rounded-[2rem] shadow-sm border dark:border-slate-800">
+                <h3 class="font-bold text-xs uppercase tracking-widest text-gray-400 mb-6">Order Number</h3>
+                <div class="space-y-5">
                     <div>
                         <label class="block text-[10px] font-black text-gray-400 uppercase mb-2 px-1">Country</label>
-                        <select id="country-select" class="w-full bg-gray-50 dark:bg-slate-800 border dark:border-slate-700 p-3.5 rounded-xl outline-none focus:border-primary transition-all text-sm font-semibold">
+                        <select id="country-select" class="w-full bg-gray-50 dark:bg-slate-800 border dark:border-slate-700 p-4 rounded-2xl outline-none focus:border-primary text-sm font-bold">
                             <option value="">Loading Countries...</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-[10px] font-black text-gray-400 uppercase mb-2 px-1">Service</label>
-                        <select id="service-select" class="w-full bg-gray-50 dark:bg-slate-800 border dark:border-slate-700 p-3.5 rounded-xl outline-none focus:border-primary transition-all text-sm font-semibold">
+                        <select id="service-select" class="w-full bg-gray-50 dark:bg-slate-800 border dark:border-slate-700 p-4 rounded-2xl outline-none focus:border-primary text-sm font-bold">
                             <option value="">Select country first</option>
                         </select>
                     </div>
-                    <button onclick="buyNumber()" id="buy-btn" class="w-full bg-primary hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-95 text-sm mt-2">
-                        PURCHASE NUMBER
+                    <button onclick="buyNumber()" id="buy-btn" class="w-full bg-primary hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-500/20 active:scale-95 transition-all text-xs uppercase tracking-widest mt-2">
+                        Buy Number
                     </button>
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border dark:border-slate-800 flex flex-col items-center justify-center min-h-[300px]">
-                <div id="no-order" class="text-center">
-                    <div class="w-16 h-16 bg-gray-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 mx-auto">
-                        <i class="fas fa-robot text-2xl text-gray-300 dark:text-slate-600"></i>
-                    </div>
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">System Ready</p>
+            <!-- OTP Display -->
+            <div class="bg-white dark:bg-slate-900 p-7 rounded-[2rem] shadow-sm border dark:border-slate-800 flex flex-col items-center justify-center min-h-[320px]">
+                <div id="no-order" class="text-center opacity-30">
+                    <i class="fas fa-shield-alt text-5xl mb-4"></i>
+                    <p class="text-[10px] font-black uppercase tracking-widest">Waiting for Order</p>
                 </div>
 
                 <div id="order-container" class="hidden w-full space-y-6">
-                    <div class="bg-blue-50 dark:bg-blue-900/10 p-5 rounded-2xl text-center border border-blue-100 dark:border-blue-900/30">
-                        <p class="text-[9px] text-primary font-black uppercase mb-1 tracking-widest">New Number</p>
-                        <p id="phone-number" class="text-3xl font-mono font-bold text-slate-800 dark:text-white tracking-tighter">-----------</p>
+                    <div class="bg-blue-50 dark:bg-blue-900/10 p-6 rounded-2xl text-center border border-blue-100 dark:border-blue-900/30">
+                        <p class="text-[9px] text-primary font-black uppercase mb-1 tracking-widest">Received Number</p>
+                        <p id="phone-number" class="text-3xl font-mono font-bold text-slate-800 dark:text-white">-----------</p>
                         <button onclick="copyText('phone-number')" class="mt-2 text-[10px] text-primary font-bold uppercase tracking-widest"><i class="far fa-copy mr-1"></i> Copy</button>
                     </div>
                     <div class="text-center">
-                        <div id="otp-display" class="text-5xl font-black text-primary tracking-widest animate-pulse">------</div>
-                        <p class="text-[10px] text-gray-400 mt-2 font-bold uppercase">Waiting for SMS</p>
+                        <div id="otp-display" class="text-6xl font-black text-primary tracking-widest animate-pulse">------</div>
+                        <p class="text-[10px] text-gray-400 mt-3 font-bold uppercase">SMS Status: Waiting</p>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="cancelOrder()" class="flex-1 bg-red-50 dark:bg-red-900/10 text-red-500 py-3 rounded-xl font-bold text-[10px] uppercase border border-red-100 dark:border-red-900/30">Cancel</button>
-                        <button onclick="checkStatus()" class="flex-1 bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-300 py-3 rounded-xl font-bold text-[10px] uppercase">Refresh</button>
+                        <button onclick="cancelOrder()" class="flex-1 bg-red-50 dark:bg-red-900/10 text-red-500 py-3.5 rounded-xl font-bold text-[10px] uppercase border border-red-100">Cancel</button>
+                        <button onclick="checkStatus()" class="flex-1 bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-300 py-3.5 rounded-xl font-bold text-[10px] uppercase">Refresh</button>
                     </div>
                 </div>
             </div>
@@ -182,8 +160,189 @@
 
     </div>
 
-    <!-- WhatsApp Floating -->
-    <a href="https://wa.me/923000000000" class="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-2xl shadow-2xl hover:scale-110 transition-all">
+    <!-- WhatsApp Button -->
+    <a href="https://wa.me/923000000000" class="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-2xl shadow-2xl hover:scale-110 transition-all z-[100]">
+        <i class="fab fa-whatsapp text-2xl"></i>
+    </a>
+
+    <script>
+        // --- CONFIGURATION ---
+        const API_PATH = '/api/otp'; 
+        const PROFIT = 40; // Price mein 40 PKR profit add hoga
+
+        // --- THEME LOGIC ---
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.theme = 'light';
+                icon.className = 'fas fa-moon';
+            } else {
+                html.classList.add('dark');
+                localStorage.theme = 'dark';
+                icon.className = 'fas fa-sun';
+            }
+        }
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            document.getElementById('theme-icon').className = 'fas fa-sun';
+        }
+
+        // --- ERROR LOGIC ---
+        function showError() {
+            document.getElementById('error-box').classList.add('show');
+            setTimeout(() => document.getElementById('error-box').classList.remove('show'), 4000);
+        }
+        function hideError() { document.getElementById('error-box').classList.remove('show'); }
+
+        // --- FIREBASE PLACEHOLDER (Replace with your actual keys) ---
+        const firebaseConfig = { apiKey: "...", ... }; 
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let userBalance = 0;
+        let currentOrderId = null;
+        let statusInterval = null;
+
+        // --- API DATA LOADING (FIXED) ---
+        window.onload = () => {
+            loadCountries();
+            // Firebase balance load
+            db.collection("users").doc("test-user").onSnapshot(doc => {
+                if(doc.exists) {
+                    userBalance = doc.data().balance;
+                    document.getElementById('user-balance').innerText = userBalance.toFixed(2);
+                }
+            });
+        };
+
+        async function loadCountries() {
+            const select = document.getElementById('country-select');
+            try {
+                console.log("Loading Countries..."); // Debug
+                const res = await fetch(`${API_PATH}?action=getCountries`);
+                const data = await res.json();
+                
+                // API data format check
+                const list = data["1"] || [];
+                
+                select.innerHTML = '<option value="">Choose Country</option>';
+                if(list.length === 0) {
+                    select.innerHTML = '<option value="">No Data from API</option>';
+                    return;
+                }
+
+                list.forEach(c => {
+                    let opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.innerText = c.name;
+                    select.appendChild(opt);
+                });
+                console.log("Countries Loaded Successfully");
+            } catch (e) {
+                console.error("Fetch Countries Error:", e);
+                select.innerHTML = '<option value="">Error Loading...</option>';
+            }
+        }
+
+        document.getElementById('country-select').addEventListener('change', async (e) => {
+            const countryId = e.target.value;
+            const select = document.getElementById('service-select');
+            if(!countryId) return;
+
+            select.innerHTML = '<option value="">Loading Services...</option>';
+            try {
+                const res = await fetch(`${API_PATH}?action=getServices&country=${countryId}`);
+                const data = await res.json();
+                const services = data["1"] || data;
+                
+                select.innerHTML = '<option value="">Choose Service</option>';
+                
+                Object.keys(services).forEach(id => {
+                    const rawStr = services[id]; // e.g. "whatsapp - 390 PKR"
+                    let name = id.toUpperCase();
+                    let price = 0;
+
+                    if(typeof rawStr === 'string' && rawStr.includes(' - ')) {
+                        const parts = rawStr.split(' - ');
+                        name = parts[0].toUpperCase();
+                        const match = parts[1].match(/\d+/);
+                        if(match) price = parseFloat(match[0]);
+                    }
+
+                    const finalPrice = price + PROFIT;
+                    let opt = document.createElement('option');
+                    opt.value = id;
+                    opt.dataset.price = finalPrice;
+                    opt.innerText = `${name} (Rs ${Math.ceil(finalPrice)})`;
+                    select.appendChild(opt);
+                });
+            } catch (e) { 
+                console.error(e);
+                select.innerHTML = '<option value="">No Services</option>';
+            }
+        });
+
+        // --- BUY & STATUS LOGIC ---
+        async function buyNumber() {
+            const select = document.getElementById('service-select');
+            const price = parseFloat(select.options[select.selectedIndex]?.dataset.price || 0);
+            
+            if(userBalance < price) { showError(); return; }
+
+            const country = document.getElementById('country-select').value;
+            const service = select.value;
+            const btn = document.getElementById('buy-btn');
+
+            btn.disabled = true; btn.innerHTML = 'Connecting...';
+
+            try {
+                const res = await fetch(`${API_PATH}?action=getNumber&country=${country}&service=${service}&type=1`);
+                const json = await res.json();
+                const data = json.raw_text;
+
+                if(data.includes('ACCESS_NUMBER')) {
+                    const parts = data.split(':');
+                    currentOrderId = parts[1];
+                    document.getElementById('phone-number').innerText = '+' + parts[2];
+                    
+                    // Deduct from Firebase
+                    db.collection("users").doc("test-user").update({
+                        balance: firebase.firestore.FieldValue.increment(-price)
+                    });
+
+                    document.getElementById('order-container').classList.remove('hidden');
+                    document.getElementById('no-order').classList.add('hidden');
+                    startStatusCheck();
+                } else { alert("API Error: " + data); }
+            } catch (e) { alert("Failed to purchase"); }
+            btn.disabled = false; btn.innerHTML = 'Buy Number';
+        }
+
+        function startStatusCheck() { 
+            if(statusInterval) clearInterval(statusInterval);
+            statusInterval = setInterval(checkStatus, 5000); 
+        }
+
+        async function checkStatus() {
+            if(!currentOrderId) return;
+            const res = await fetch(`${API_PATH}?action=getStatus&id=${currentOrderId}`);
+            const json = await res.json();
+            const data = json.raw_text;
+            if(data.includes('STATUS_OK')) {
+                document.getElementById('otp-display').innerText = data.split(':')[1];
+                clearInterval(statusInterval);
+            }
+        }
+
+        function copyText(id) {
+            navigator.clipboard.writeText(document.getElementById(id).innerText);
+            alert("Copied!");
+        }
+    </script>
+</body>
+</html>3000000000" class="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-2xl shadow-2xl hover:scale-110 transition-all">
         <i class="fab fa-whatsapp text-2xl"></i>
     </a>
 
