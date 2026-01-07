@@ -23,8 +23,8 @@
                 <span class="text-2xl font-black tracking-tight">OTP<span class="text-blue-500">GET</span></span>
             </div>
             <div class="bg-gray-800/80 px-4 py-2 rounded-full border border-gray-700">
-                <span class="text-[10px] text-gray-400 uppercase font-black mr-2">Balance</span>
-                <span id="balance-display" class="text-green-400 font-mono font-bold text-sm md:text-base">Rs 0.00</span>
+                <span class="text-[10px] text-gray-400 uppercase font-black mr-2">Your Balance</span>
+                <span id="balance-display" class="text-green-400 font-mono font-bold">Rs 0.00</span>
             </div>
         </div>
     </nav>
@@ -36,25 +36,25 @@
             <div class="lg:col-span-5">
                 <div class="bg-gray-800/40 p-8 rounded-3xl border border-gray-700 shadow-2xl">
                     <h2 class="text-xl font-bold mb-8 text-blue-400 flex items-center gap-3">
-                        <i class="fas fa-sliders-h"></i> Configure Order
+                        <i class="fas fa-shopping-cart"></i> Order Number
                     </h2>
 
                     <div class="mb-6">
-                        <label class="block text-xs font-black text-gray-500 uppercase mb-2 ml-1 tracking-widest">1. Select Country</label>
+                        <label class="block text-xs font-black text-gray-500 uppercase mb-2 ml-1 tracking-widest">1. Choose Country</label>
                         <select id="country-select" class="w-full bg-gray-900 border border-gray-700 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer">
                             <option value="">Loading Countries...</option>
                         </select>
                     </div>
 
                     <div class="mb-10">
-                        <label class="block text-xs font-black text-gray-500 uppercase mb-2 ml-1 tracking-widest">2. Select Service</label>
+                        <label class="block text-xs font-black text-gray-500 uppercase mb-2 ml-1 tracking-widest">2. Choose Service</label>
                         <select id="service-select" class="w-full bg-gray-900 border border-gray-700 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer">
                             <option value="">Select country first</option>
                         </select>
                     </div>
 
                     <button onclick="buyNumber()" id="buy-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-5 rounded-2xl shadow-xl transition-all active:scale-95 flex justify-center items-center gap-3 text-lg">
-                        <i class="fas fa-shopping-basket"></i> GET NUMBER
+                        <i class="fas fa-bolt"></i> GET NUMBER NOW
                     </button>
                 </div>
             </div>
@@ -63,16 +63,16 @@
             <div class="lg:col-span-7">
                 <div class="bg-gray-800/40 p-8 rounded-3xl border border-gray-700 shadow-2xl min-h-[450px] flex flex-col relative">
                     <h2 class="text-xl font-bold mb-8 text-yellow-500 flex items-center gap-3">
-                        <i class="fas fa-bolt"></i> Live Activation
+                        <i class="fas fa-satellite-dish"></i> Live Activation
                     </h2>
 
                     <div id="no-order" class="flex-grow flex flex-col items-center justify-center text-gray-500 opacity-40 py-10">
-                        <i class="fas fa-phone-slash text-6xl mb-4"></i>
-                        <p class="text-center">No active number.<br>Order details will appear here.</p>
+                        <i class="fas fa-phone-alt text-6xl mb-4"></i>
+                        <p class="text-center">Waiting for your first order...</p>
                     </div>
 
                     <div id="order-container" class="hidden space-y-10 animate-in fade-in duration-300">
-                        <div class="bg-gray-900/80 p-8 rounded-3xl border border-gray-700 shadow-inner">
+                        <div class="bg-gray-900/80 p-8 rounded-3xl border border-gray-700">
                             <p class="text-[10px] text-gray-500 uppercase font-black mb-4 tracking-widest">Phone Number</p>
                             <div class="flex items-center justify-between">
                                 <span id="phone-number" class="text-3xl md:text-5xl font-mono font-bold text-white tracking-tighter">-----------</span>
@@ -81,7 +81,7 @@
                         </div>
 
                         <div class="text-center py-4">
-                            <p class="text-[10px] text-gray-500 uppercase font-black mb-4 tracking-widest">Verification Code (OTP)</p>
+                            <p class="text-[10px] text-gray-500 uppercase font-black mb-4 tracking-widest">OTP Status</p>
                             <div id="otp-display" class="text-7xl font-black text-green-500 font-mono tracking-widest animate-pulse">------</div>
                         </div>
 
@@ -101,19 +101,25 @@
         let currentOrderId = null;
         let statusInterval = null;
 
-        // Service Code to Name Mapping
+        // --- CONFIGURATION ---
+        const PROFIT_PERCENTAGE = 40; // Apna profit set karen (e.g., 40% matlab Rs 10 ki cheez Rs 14 mein)
+        const DEFAULT_MIN_PRICE = 30; // Agar kisi ki price 0 ho to ye dikhaye
+
+        // Service Codes Mapping (lb, jb etc ko asli naamon mein badalne ke liye)
         const serviceNames = {
             "wa": "WhatsApp", "tg": "Telegram", "go": "Google / Gmail", "fb": "Facebook",
             "ig": "Instagram", "tk": "TikTok", "nf": "Netflix", "am": "Amazon",
             "tw": "Twitter / X", "mt": "Microsoft", "ub": "Uber", "dr": "DoorDash",
-            "nf": "Netflix", "lf": "LinkedIn", "yl": "Yandex", "mm": "Microsoft",
-            "uk": "Airbnb", "ki": "OkCupid", "hw": "Hinge", "al": "Alibaba",
-            "pm": "PayPal", "wx": "WeChat", "li": "Line", "bl": "Bigo Live",
-            "bz": "Blizzard", "qn": "Quizlet", "tx": "Taxfix", "ip": "IPTV"
+            "lf": "LinkedIn", "yl": "Yandex", "uk": "Airbnb", "ki": "OkCupid", 
+            "hw": "Hinge", "al": "Alibaba", "pm": "PayPal", "wx": "WeChat", 
+            "li": "Line", "bl": "Bigo Live", "bz": "Blizzard", "qn": "Quizlet", 
+            "tx": "Taxfix", "ip": "IPTV", "lb": "Mail.ru / Lazada", "jb": "Joom",
+            "vi": "Viber", "ok": "OK.ru", "vk": "VKontakte", "ot": "Other Services"
         };
 
         window.onload = () => { getBalance(); loadCountries(); };
 
+        // 1. Get Balance
         async function getBalance() {
             try {
                 const res = await fetch(`${API_PATH}?action=getBalance`);
@@ -125,6 +131,7 @@
             } catch (e) { console.error("Balance failed"); }
         }
 
+        // 2. Load Countries
         async function loadCountries() {
             const select = document.getElementById('country-select');
             try {
@@ -139,9 +146,10 @@
                     opt.innerText = country.name;
                     select.appendChild(opt);
                 });
-            } catch (e) { select.innerHTML = '<option value="">Error loading list</option>'; }
+            } catch (e) { select.innerHTML = '<option value="">Error loading</option>'; }
         }
 
+        // 3. Load Services with Automatic Parser & Profit
         document.getElementById('country-select').addEventListener('change', async (e) => {
             const countryId = e.target.value;
             const select = document.getElementById('service-select');
@@ -152,34 +160,118 @@
                 const res = await fetch(`${API_PATH}?action=getServices&country=${countryId}`);
                 const data = await res.json();
                 
-                // Get the main services list (Key "1")
+                // Key "1" ya direct object
                 const servicesData = data["1"] || data;
                 select.innerHTML = '<option value="">Select Service</option>';
                 
-                // Logic to handle Array or Object response
-                const iterate = (obj) => {
-                    Object.keys(obj).forEach(id => {
-                        const s = obj[id];
-                        let opt = document.createElement('option');
-                        
-                        // ID set karna (wa, tg etc)
-                        opt.value = s.id || id;
-                        
-                        // Name set karna (Mapping se ya ID)
-                        const rawId = s.id || id;
-                        const sName = s.name || serviceNames[rawId] || rawId.toUpperCase();
-                        
-                        // Price fix karna
-                        const sPrice = s.price || '0';
-                        
-                        opt.innerText = `${sName} (Rs ${sPrice})`;
-                        select.appendChild(opt);
-                    });
-                };
+                Object.keys(servicesData).forEach(code => {
+                    const rawValue = servicesData[code]; // e.g. "WhatsApp - 60 PKR"
+                    let displayName = code.toUpperCase();
+                    let apiBasePrice = 0;
 
-                iterate(servicesData);
+                    // Step A: Parse String (e.g. "Telegram - 45 PKR")
+                    if (typeof rawValue === 'string') {
+                        const parts = rawValue.split(' - ');
+                        if (parts.length >= 2) {
+                            // Name part
+                            displayName = parts[0];
+                            // Price part
+                            const priceMatch = parts[1].match(/\d+/);
+                            if (priceMatch) apiBasePrice = parseFloat(priceMatch[0]);
+                        } else {
+                            displayName = rawValue;
+                        }
+                    } else if (typeof rawValue === 'object') {
+                        displayName = rawValue.name || code.toUpperCase();
+                        apiBasePrice = parseFloat(rawValue.price || rawValue.cost || 0);
+                    }
+
+                    // Step B: Manual Name Mapping Fix (lb, jb fix)
+                    if (serviceNames[code.toLowerCase()]) {
+                        displayName = serviceNames[code.toLowerCase()];
+                    }
+
+                    // Step C: Profit Calculation
+                    if (apiBasePrice <= 0) apiBasePrice = DEFAULT_MIN_PRICE;
+                    const finalPrice = apiBasePrice + (apiBasePrice * (PROFIT_PERCENTAGE / 100));
+                    
+                    let opt = document.createElement('option');
+                    opt.value = code;
+                    opt.innerText = `${displayName.toUpperCase()} (Rs ${Math.ceil(finalPrice)})`;
+                    select.appendChild(opt);
+                });
                 
-            } catch (e) { select.innerHTML = '<option value="">No services available</option>'; }
+            } catch (e) { select.innerHTML = '<option value="">No services</option>'; }
+        });
+
+        // 4. Buy Number
+        async function buyNumber() {
+            const country = document.getElementById('country-select').value;
+            const service = document.getElementById('service-select').value;
+            if(!country || !service) return alert("Select country and service!");
+
+            const btn = document.getElementById('buy-btn');
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner animate-spin"></i> CONNECTING...';
+
+            try {
+                const res = await fetch(`${API_PATH}?action=getNumber&country=${country}&service=${service}&type=1`);
+                const json = await res.json();
+                const data = json.raw_text;
+
+                if(data.includes('ACCESS_NUMBER')) {
+                    const parts = data.split(':');
+                    currentOrderId = parts[1];
+                    document.getElementById('phone-number').innerText = '+' + parts[2];
+                    document.getElementById('order-container').classList.remove('hidden');
+                    document.getElementById('no-order').classList.add('hidden');
+                    startStatusCheck();
+                    getBalance();
+                } else { alert("Error: " + data); }
+            } catch (e) { alert("Failed to fetch number"); }
+            btn.disabled = false; btn.innerHTML = '<i class="fas fa-bolt"></i> GET NUMBER NOW';
+        }
+
+        function startStatusCheck() {
+            if(statusInterval) clearInterval(statusInterval);
+            statusInterval = setInterval(checkStatus, 5000);
+        }
+
+        async function checkStatus() {
+            if(!currentOrderId) return;
+            const res = await fetch(`${API_PATH}?action=getStatus&id=${currentOrderId}`);
+            const json = await res.json();
+            const data = json.raw_text;
+
+            if(data.includes('STATUS_OK')) {
+                document.getElementById('otp-display').innerText = data.split(':')[1];
+                document.getElementById('otp-display').classList.remove('animate-pulse');
+                clearInterval(statusInterval);
+                alert("OTP RECEIVED!");
+            } else if(data === "STATUS_CANCEL") { resetUI(); }
+        }
+
+        async function cancelOrder() {
+            if(!confirm("Cancel and refund?")) return;
+            await fetch(`${API_PATH}?action=setStatus&id=${currentOrderId}&status=8`);
+            resetUI();
+            getBalance();
+        }
+
+        function resetUI() {
+            currentOrderId = null; clearInterval(statusInterval);
+            document.getElementById('order-container').classList.add('hidden');
+            document.getElementById('no-order').classList.remove('hidden');
+            document.getElementById('otp-display').innerText = "------";
+            document.getElementById('otp-display').classList.add('animate-pulse');
+        }
+
+        function copyText(id) {
+            navigator.clipboard.writeText(document.getElementById(id).innerText);
+            alert("Copied!");
+        }
+    </script>
+</body>
+</html>value="">No services available</option>'; }
         });
 
         async function buyNumber() {
