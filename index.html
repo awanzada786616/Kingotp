@@ -10,9 +10,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #0b1120; color: #f3f4f6; }
         .glass { background: rgba(31, 41, 55, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
-        .custom-scroll::-webkit-scrollbar { width: 5px; }
-        .custom-scroll::-webkit-scrollbar-track { background: #111827; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #374151; border-radius: 10px; }
+        select option { background-color: #111827; }
     </style>
 </head>
 <body class="min-h-screen pb-10">
@@ -26,7 +24,7 @@
             </div>
             <div class="bg-gray-800/80 px-4 py-2 rounded-full border border-gray-700">
                 <span class="text-[10px] text-gray-400 uppercase font-black mr-2">Balance</span>
-                <span id="balance-display" class="text-green-400 font-mono font-bold">Rs 0.00</span>
+                <span id="balance-display" class="text-green-400 font-mono font-bold text-sm md:text-base">Rs 0.00</span>
             </div>
         </div>
     </nav>
@@ -42,14 +40,14 @@
                     </h2>
 
                     <div class="mb-6">
-                        <label class="block text-xs font-black text-gray-500 uppercase mb-2 ml-1">1. Select Country</label>
-                        <select id="country-select" class="w-full bg-gray-900 border border-gray-700 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer custom-scroll">
+                        <label class="block text-xs font-black text-gray-500 uppercase mb-2 ml-1 tracking-widest">1. Select Country</label>
+                        <select id="country-select" class="w-full bg-gray-900 border border-gray-700 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer">
                             <option value="">Loading Countries...</option>
                         </select>
                     </div>
 
                     <div class="mb-10">
-                        <label class="block text-xs font-black text-gray-500 uppercase mb-2 ml-1">2. Select Service</label>
+                        <label class="block text-xs font-black text-gray-500 uppercase mb-2 ml-1 tracking-widest">2. Select Service</label>
                         <select id="service-select" class="w-full bg-gray-900 border border-gray-700 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer">
                             <option value="">Select country first</option>
                         </select>
@@ -68,13 +66,13 @@
                         <i class="fas fa-bolt"></i> Live Activation
                     </h2>
 
-                    <div id="no-order" class="flex-grow flex flex-col items-center justify-center text-gray-500 opacity-40">
+                    <div id="no-order" class="flex-grow flex flex-col items-center justify-center text-gray-500 opacity-40 py-10">
                         <i class="fas fa-phone-slash text-6xl mb-4"></i>
                         <p class="text-center">No active number.<br>Order details will appear here.</p>
                     </div>
 
                     <div id="order-container" class="hidden space-y-10 animate-in fade-in duration-300">
-                        <div class="bg-gray-900/80 p-8 rounded-3xl border border-gray-700">
+                        <div class="bg-gray-900/80 p-8 rounded-3xl border border-gray-700 shadow-inner">
                             <p class="text-[10px] text-gray-500 uppercase font-black mb-4 tracking-widest">Phone Number</p>
                             <div class="flex items-center justify-between">
                                 <span id="phone-number" class="text-3xl md:text-5xl font-mono font-bold text-white tracking-tighter">-----------</span>
@@ -89,7 +87,7 @@
 
                         <div class="flex gap-4">
                             <button onclick="cancelOrder()" class="flex-1 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/20 py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all">Cancel</button>
-                            <button onclick="checkStatus()" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all">Refresh</button>
+                            <button onclick="checkStatus()" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all">Refresh Status</button>
                         </div>
                     </div>
                 </div>
@@ -103,9 +101,19 @@
         let currentOrderId = null;
         let statusInterval = null;
 
+        // Service Code to Name Mapping
+        const serviceNames = {
+            "wa": "WhatsApp", "tg": "Telegram", "go": "Google / Gmail", "fb": "Facebook",
+            "ig": "Instagram", "tk": "TikTok", "nf": "Netflix", "am": "Amazon",
+            "tw": "Twitter / X", "mt": "Microsoft", "ub": "Uber", "dr": "DoorDash",
+            "nf": "Netflix", "lf": "LinkedIn", "yl": "Yandex", "mm": "Microsoft",
+            "uk": "Airbnb", "ki": "OkCupid", "hw": "Hinge", "al": "Alibaba",
+            "pm": "PayPal", "wx": "WeChat", "li": "Line", "bl": "Bigo Live",
+            "bz": "Blizzard", "qn": "Quizlet", "tx": "Taxfix", "ip": "IPTV"
+        };
+
         window.onload = () => { getBalance(); loadCountries(); };
 
-        // 1. Balance
         async function getBalance() {
             try {
                 const res = await fetch(`${API_PATH}?action=getBalance`);
@@ -117,14 +125,11 @@
             } catch (e) { console.error("Balance failed"); }
         }
 
-        // 2. Load Countries (Fixed for Nested Array)
         async function loadCountries() {
             const select = document.getElementById('country-select');
             try {
                 const res = await fetch(`${API_PATH}?action=getCountries`);
                 const data = await res.json();
-                
-                // Key "1" ke andar array hai
                 const countriesArray = data["1"] || [];
                 
                 select.innerHTML = '<option value="">Select Country</option>';
@@ -134,13 +139,9 @@
                     opt.innerText = country.name;
                     select.appendChild(opt);
                 });
-            } catch (e) { 
-                console.error("Countries Error:", e);
-                select.innerHTML = '<option value="">Error loading list</option>'; 
-            }
+            } catch (e) { select.innerHTML = '<option value="">Error loading list</option>'; }
         }
 
-        // 3. Load Services (Fixed for Nested Array)
         document.getElementById('country-select').addEventListener('change', async (e) => {
             const countryId = e.target.value;
             const select = document.getElementById('service-select');
@@ -151,33 +152,36 @@
                 const res = await fetch(`${API_PATH}?action=getServices&country=${countryId}`);
                 const data = await res.json();
                 
-                // Services bhi nested ho sakti hain
-                const servicesArray = data["1"] || data;
-                
+                // Get the main services list (Key "1")
+                const servicesData = data["1"] || data;
                 select.innerHTML = '<option value="">Select Service</option>';
                 
-                // Agar array hai
-                if(Array.isArray(servicesArray)) {
-                    servicesArray.forEach(s => {
+                // Logic to handle Array or Object response
+                const iterate = (obj) => {
+                    Object.keys(obj).forEach(id => {
+                        const s = obj[id];
                         let opt = document.createElement('option');
-                        opt.value = s.id;
-                        opt.innerText = `${s.name} (Rs ${s.price || '0'})`;
+                        
+                        // ID set karna (wa, tg etc)
+                        opt.value = s.id || id;
+                        
+                        // Name set karna (Mapping se ya ID)
+                        const rawId = s.id || id;
+                        const sName = s.name || serviceNames[rawId] || rawId.toUpperCase();
+                        
+                        // Price fix karna
+                        const sPrice = s.price || '0';
+                        
+                        opt.innerText = `${sName} (Rs ${sPrice})`;
                         select.appendChild(opt);
                     });
-                } else {
-                    // Agar object hai
-                    Object.keys(servicesArray).forEach(id => {
-                        const s = servicesArray[id];
-                        let opt = document.createElement('option');
-                        opt.value = id;
-                        opt.innerText = `${s.name || id} (Rs ${s.price || '0'})`;
-                        select.appendChild(opt);
-                    });
-                }
+                };
+
+                iterate(servicesData);
+                
             } catch (e) { select.innerHTML = '<option value="">No services available</option>'; }
         });
 
-        // 4. Buy Number
         async function buyNumber() {
             const country = document.getElementById('country-select').value;
             const service = document.getElementById('service-select').value;
@@ -187,7 +191,7 @@
             btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch animate-spin"></i> BUYING...';
 
             try {
-                const res = await fetch(`${API_PATH}?action=getNumber&country=${country}&service=${service}`);
+                const res = await fetch(`${API_PATH}?action=getNumber&country=${country}&service=${service}&type=1`);
                 const json = await res.json();
                 const data = json.raw_text;
 
@@ -204,7 +208,6 @@
             btn.disabled = false; btn.innerHTML = '<i class="fas fa-shopping-basket"></i> GET NUMBER';
         }
 
-        // 5. Polling
         function startStatusCheck() {
             if(statusInterval) clearInterval(statusInterval);
             statusInterval = setInterval(checkStatus, 5000);
@@ -243,112 +246,6 @@
             const text = document.getElementById(id).innerText;
             navigator.clipboard.writeText(text);
             alert("Copied!");
-        }
-    </script>
-</body>
-</html>"">Select country first</option>'; return; }
-
-            select.innerHTML = '<option value="">Loading Services...</option>';
-            try {
-                const res = await fetch(`${API_PATH}?action=getServices&country=${countryId}`);
-                const data = await res.json();
-                select.innerHTML = '<option value="">Select Service</option>';
-                
-                Object.entries(data).forEach(([id, info]) => {
-                    let opt = document.createElement('option');
-                    opt.value = id;
-                    const name = (info && info.name) ? info.name : id;
-                    const price = (info && info.price) ? info.price : '0';
-                    opt.innerText = `${name} (Rs ${price})`;
-                    select.appendChild(opt);
-                });
-            } catch (e) { select.innerHTML = '<option value="">No services available</option>'; }
-        });
-
-        // 4. Buy Number
-        async function buyNumber() {
-            const country = document.getElementById('country-select').value;
-            const service = document.getElementById('service-select').value;
-            const btn = document.getElementById('buy-btn');
-
-            if(!country || !service) { alert("Please select country and service!"); return; }
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner animate-spin"></i> PROCESSING...';
-
-            try {
-                const res = await fetch(`${API_PATH}?action=getNumber&country=${country}&service=${service}`);
-                const json = await res.json();
-                const data = json.raw_text;
-
-                if(data.includes('ACCESS_NUMBER')) {
-                    const parts = data.split(':');
-                    currentOrderId = parts[1];
-                    document.getElementById('phone-number').innerText = '+' + parts[2];
-                    
-                    document.getElementById('order-container').classList.remove('hidden');
-                    document.getElementById('no-order').classList.add('hidden');
-                    
-                    startStatusCheck();
-                    getBalance();
-                } else {
-                    alert("Error: " + data);
-                }
-            } catch (e) { alert("Request Failed"); }
-            
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-shopping-basket"></i> GET NUMBER';
-        }
-
-        // 5. Polling OTP
-        function startStatusCheck() {
-            if(statusInterval) clearInterval(statusInterval);
-            statusInterval = setInterval(checkStatus, 5000);
-        }
-
-        async function checkStatus() {
-            if(!currentOrderId) return;
-            try {
-                const res = await fetch(`${API_PATH}?action=getStatus&id=${currentOrderId}`);
-                const json = await res.json();
-                const data = json.raw_text;
-
-                if(data.includes('STATUS_OK')) {
-                    const otp = data.split(':')[1];
-                    const otpBox = document.getElementById('otp-display');
-                    otpBox.innerText = otp;
-                    otpBox.classList.remove('animate-pulse-slow');
-                    clearInterval(statusInterval);
-                    alert("OTP RECEIVED: " + otp);
-                } else if (data === "STATUS_CANCEL") {
-                    resetUI();
-                }
-            } catch (e) { console.log("Status check error"); }
-        }
-
-        // 6. Cancel
-        async function cancelOrder() {
-            if(!confirm("Cancel this number?")) return;
-            try {
-                await fetch(`${API_PATH}?action=setStatus&id=${currentOrderId}&status=8`);
-                resetUI();
-                getBalance();
-            } catch (e) { alert("Cancel failed"); }
-        }
-
-        function resetUI() {
-            currentOrderId = null;
-            clearInterval(statusInterval);
-            document.getElementById('order-container').classList.add('hidden');
-            document.getElementById('no-order').classList.remove('hidden');
-            document.getElementById('otp-display').innerText = "------";
-            document.getElementById('otp-display').classList.add('animate-pulse-slow');
-        }
-
-        function copyText(id) {
-            const text = document.getElementById(id).innerText;
-            navigator.clipboard.writeText(text);
-            alert("Copied: " + text);
         }
     </script>
 </body>
